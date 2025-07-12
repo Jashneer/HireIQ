@@ -12,6 +12,7 @@ This is a full-stack AI-powered recruiter agent called "HireIQ" (formerly "Recru
 - **Core MVP Focus**: Prioritized AI analysis features over payment processing for beta testing
 - **Database Integration**: Configured PostgreSQL database for production-ready data persistence
 - **Error Handling**: Improved error handling for optional payment features
+- **Settings Page**: Added /settings route with placeholder page for future feature expansion
 
 ## User Preferences
 

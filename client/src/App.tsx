@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import Dashboard from "@/pages/dashboard";
+import Settings from "@/pages/settings";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import NotFound from "@/pages/not-found";
@@ -17,6 +18,11 @@ function Router() {
       <Route path="/dashboard">
         <AuthGuard>
           <Dashboard />
+        </AuthGuard>
+      </Route>
+      <Route path="/settings">
+        <AuthGuard>
+          <Settings />
         </AuthGuard>
       </Route>
       <Route path="/">
