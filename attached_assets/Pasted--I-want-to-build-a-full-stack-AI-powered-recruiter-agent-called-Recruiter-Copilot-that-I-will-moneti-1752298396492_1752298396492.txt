@@ -1,0 +1,64 @@
+“I want to build a full-stack AI-powered recruiter agent called Recruiter Copilot that I will monetize as a SaaS business within 1 week. Please generate both the frontend and backend, fully integrated and ready for deployment. This is not a simple project — this is the foundation of my business.
+
+🧠 Core AI Agent Features:
+Input: Job Description, Resume Text, Company Name, Job Title, and Outreach Tone
+
+FastAPI backend that:
+
+Extracts skills from both job and resume using NLP
+
+Calculates match score (overall + technical skills, experience level, domain relevance)
+
+Generates personalized outreach message using GPT-4 API
+
+Includes CORS for integration with frontend
+
+🎨 Frontend (React):
+React + Tailwind CSS UI with:
+
+Form inputs for JD, resume, tone, company, job title
+
+Loader animation while analyzing
+
+Visualization: Match score, skill match vs. gap (badges or progress bars)
+
+Copy outreach message button
+
+Sample data loader for demo users
+
+Connect to FastAPI backend via REST API
+
+🔐 Environment Management:
+.env file for storing OpenAI API key securely
+
+Use python-dotenv to load secrets in backend
+
+💰 Monetization & Business-Readiness (Must Include):
+Add pricing plan UI (Free Trial vs. Premium Access)
+
+Stripe integration (test mode OK) for one-time payment or subscription
+
+Add simple authentication (email/password or magic link)
+
+Add usage limits for free users (e.g., 3 analyses per day)
+
+Store user history and results in lightweight database (e.g., SQLite or Supabase)
+
+Admin dashboard for usage tracking and logs
+
+🌐 Deployment Requirements:
+Make sure app can be deployed end-to-end from Replit (both frontend & backend)
+
+Provide clear instructions for deployment URL
+
+Set up proxy or CORS headers to enable frontend-backend communication
+
+📈 Optional Bonus Features (If Time Allows):
+Web scraping integration: paste LinkedIn or job URL → auto-fill JD
+
+Resume upload (PDF parsing to text)
+
+AI feedback on how candidate can improve match score
+
+Please scaffold this project as a production-ready business. This is my startup, not a demo.”
+
