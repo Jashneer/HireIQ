@@ -92,8 +92,8 @@ let app: import("express").Express;
     } else {
       console.log("🚀 Production mode detected — mounting static routes");
 
-      const distPath = path.resolve(__dirname, "../dist");
-      const assetsPath = path.resolve(__dirname, "../dist/assets");
+      const distPath = path.resolve(__dirname, "../client/dist");
+      const assetsPath = path.resolve(distPath, "assets");
 
       app.use("/assets", express.static(assetsPath));
       console.log("🗂️ Assets route mounted");
