@@ -1,8 +1,14 @@
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import { pool } from "./db.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let express: typeof import("express");
 let app: import("express").Express;
@@ -86,13 +92,19 @@ let app: import("express").Express;
       console.log("🚀 Production mode detected — mounting static routes");
 
       const distPath = path.resolve(__dirname, "../dist");
-      const assetsPath = path.resolve(__dirname, "../dist/public/assets");
+      const assetsPath = path.resolve(__dirname, "../dist/assets");
 
       app.use("/assets", express.static(assetsPath));
       console.log("🗂️ Assets route mounted");
 
       app.use(express.static(distPath));
       console.log("🧱 Serving static frontend from:", distPath);
+
+      // Health check and SPA root: always return index.html for GET /
+      app.get("/", (_req: Request, res: Response) => {
+        console.log("🌐 Health check or root route hit — serving index.html");
+        res.sendFile(path.join(distPath, "index.html"));
+      });
 
       app.get("*", (_req: Request, res: Response) => {
         console.log("🔁 Wildcard route triggered — serving index.html");
