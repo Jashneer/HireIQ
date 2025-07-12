@@ -65,12 +65,18 @@ let app: import("express").Express;
     const distPath = path.resolve(__dirname, "../client/dist");
     app.use(express.static(distPath));
 
+    // 🔍 Confirm route handling on production
+    app.get("/debug", (_req: Request, res: Response) => {
+      res.send("✅ Express is running and serving static files.");
+    });
+
+    // Catch-all for React Router
     app.get("*", (_req: Request, res: Response) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
 
-  // 🖥️ Launch server on local address (Windows-safe)
+  // 🖥️ Launch server
   const port = parseInt(process.env.PORT || "5000", 10);
   const host = process.env.HOST || "127.0.0.1";
 
