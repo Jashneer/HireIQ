@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
-import { pool } from "./db.js"; // 👈 fixed for ESM compatibility
+import { pool } from "./db.js"; // ESM-compatible import
 
 let express: typeof import("express");
 let app: import("express").Express;
@@ -19,7 +19,7 @@ let app: import("express").Express;
     app.use(express.urlencoded({ extended: false }));
     console.log("🔌 Middleware mounted");
 
-    // 🛠️ API logging
+    // 🛠️ API logging middleware
     app.use((req: Request, res: Response, next: NextFunction) => {
       const start = Date.now();
       const path = req.path;
@@ -38,9 +38,7 @@ let app: import("express").Express;
           if (capturedJsonResponse) {
             logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
           }
-          if (logLine.length > 80) {
-            logLine = logLine.slice(0, 79) + "…";
-          }
+          if (logLine.length > 80) logLine = logLine.slice(0, 79) + "…";
           log(logLine);
         }
       });
@@ -48,7 +46,7 @@ let app: import("express").Express;
       next();
     });
 
-    // 🧪 Ping route to confirm DB connection
+    // 🧪 Ping route for DB connectivity check
     app.get("/ping-db", async (req: Request, res: Response) => {
       try {
         const result = await pool.query("SELECT NOW()");
@@ -63,7 +61,7 @@ let app: import("express").Express;
     const server = await registerRoutes(app);
     console.log("✅ Routes registered");
 
-    // 🧯 Error handler
+    // 🧯 Error handling middleware
     app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
       const status = (err as any).status || 500;
       const message = (err as any).message || "Internal Server Error";
@@ -71,7 +69,7 @@ let app: import("express").Express;
       console.error("❌ Server error:", err);
     });
 
-    // 🔧 Dev vs Production
+    // 🔧 Dev vs Production handling
     if (app.get("env") === "development") {
       console.log("🛠️ Development mode detected — running Vite setup");
       await setupVite(app, server);
@@ -79,19 +77,18 @@ let app: import("express").Express;
     } else {
       console.log("🚀 Production mode detected — mounting static routes");
 
-      const clientPath = path.resolve(__dirname, "../client");
+      const distPath = path.resolve(__dirname, "../dist");
       const assetsPath = path.resolve(__dirname, "../dist/public/assets");
-
-      app.get("/debug", (_req: Request, res: Response) => {
-        res.send("✅ Serving client/index.html and dist/public/assets/");
-      });
 
       app.use("/assets", express.static(assetsPath));
       console.log("🗂️ Assets route mounted");
 
+      app.use(express.static(distPath));
+      console.log("🧱 Serving static frontend from:", distPath);
+
       app.get("*", (_req: Request, res: Response) => {
         console.log("🔁 Wildcard route triggered — serving index.html");
-        res.sendFile(path.join(clientPath, "index.html"));
+        res.sendFile(path.join(distPath, "index.html"));
       });
     }
 
