@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
-import { pool } from "./db"; // 👈 make sure this path matches your DB connector
+import { pool } from "./db.js"; // 👈 fixed for ESM compatibility
 
 let express: typeof import("express");
 let app: import("express").Express;
