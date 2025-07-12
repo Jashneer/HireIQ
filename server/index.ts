@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import { pool } from "./db"; // 👈 make sure this path matches your DB connector
 
 let express: typeof import("express");
 let app: import("express").Express;
@@ -31,7 +32,7 @@ let app: import("express").Express;
       };
 
       res.on("finish", () => {
-        if (path.startsWith("/api")) {
+        if (path.startsWith("/api") || path === "/ping-db") {
           const duration = Date.now() - start;
           let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
           if (capturedJsonResponse) {
@@ -45,6 +46,17 @@ let app: import("express").Express;
       });
 
       next();
+    });
+
+    // 🧪 Ping route to confirm DB connection
+    app.get("/ping-db", async (req: Request, res: Response) => {
+      try {
+        const result = await pool.query("SELECT NOW()");
+        res.json({ time: result.rows[0].now });
+      } catch (err) {
+        console.error("❌ Database connection failed:", err);
+        res.status(500).send("Database connection failed");
+      }
     });
 
     console.log("📦 Registering routes…");
