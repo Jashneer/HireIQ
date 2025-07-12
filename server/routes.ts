@@ -1,5 +1,4 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { aiService } from "./services/ai-service";
 import { pdfService } from "./services/pdf-service";
@@ -13,7 +12,7 @@ import {
   type AnalysisRequest 
 } from "@shared/schema";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<void> {
   // Health check
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
@@ -40,7 +39,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Protected routes
   app.get("/api/auth/me", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const { password, ...user } = req.user;
@@ -50,26 +48,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Analysis routes
   app.post("/api/analyze", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const user = req.user;
-      
-      // Check usage limits
       const usageCheck = authService.checkUsageLimit(user);
       if (!usageCheck.canUse) {
         return res.status(429).json({ message: usageCheck.message });
       }
 
       const analysisData: AnalysisRequest = analysisRequestSchema.parse(req.body);
-      
-      // Perform AI analysis
       const skillAnalysis = await aiService.analyzeSkills(
         analysisData.resumeText,
         analysisData.jobDescription
       );
 
-      // Generate outreach message
       const outreachResult = await aiService.generateOutreach(
         analysisData.candidateName || "Candidate",
         analysisData.jobTitle,
@@ -79,7 +71,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         skillAnalysis.overallScore
       );
 
-      // Save analysis to storage
       const analysis = await storage.createAnalysis({
         userId: user.id,
         candidateName: analysisData.candidateName,
@@ -99,7 +90,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         improvementSuggestions: outreachResult.improvementSuggestions,
       });
 
-      // Increment usage count
       await storage.incrementUsageCount(user.id);
 
       res.json({
@@ -123,7 +113,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get user's analyses
   app.get("/api/analyses", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const user = req.user;
@@ -135,24 +124,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get analysis by ID
   app.get("/api/analyses/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const user = req.user;
       const analysisId = parseInt(req.params.id);
       const analysis = await storage.getAnalysisById(analysisId);
-      
       if (!analysis || analysis.userId !== user.id) {
         return res.status(404).json({ message: "Analysis not found" });
       }
-      
       res.json({ analysis });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // Get user stats
   app.get("/api/stats", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const user = req.user;
@@ -163,32 +148,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PDF upload route
-  app.post("/api/upload-pdf", authenticateToken, async (req: AuthenticatedRequest, res) => {
-    try {
-      // This would handle PDF upload and extraction
-      // For now, we'll return an error asking users to paste text manually
-      res.status(501).json({ 
-        message: "PDF upload not implemented yet. Please paste the resume text manually in the form." 
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
+  app.post("/api/upload-pdf", authenticateToken, async (_req, res) => {
+    res.status(501).json({ message: "PDF upload not implemented yet. Please paste the resume text manually in the form." });
   });
 
-  // Stripe routes
   app.post("/api/stripe/create-checkout-session", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const user = req.user;
       const { priceId, successUrl, cancelUrl } = req.body;
-      
       const checkoutUrl = await stripeService.createCheckoutSession(
         user.id,
         priceId,
         successUrl,
         cancelUrl
       );
-      
       res.json({ checkoutUrl });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -199,14 +172,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const signature = req.headers['stripe-signature'] as string;
       const body = req.body;
-      
       await stripeService.handleWebhook(body, signature);
       res.json({ received: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
-
-  const httpServer = createServer(app);
-  return httpServer;
 }
