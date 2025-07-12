@@ -1,14 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
 
 let express: typeof import("express");
 let app: import("express").Express;
 
-
 (async () => {
   const expressModule = await import("express");
-  // Some environments require .default, some do not
   const expressFn = (expressModule as any).default || expressModule;
   express = expressFn;
   app = expressFn();
@@ -62,7 +61,13 @@ let app: import("express").Express;
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // 🧱 Serve static frontend files from Vite build
+    const distPath = path.resolve(__dirname, "../client/dist");
+    app.use(express.static(distPath));
+
+    app.get("*", (_req: Request, res: Response) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
   }
 
   // 🖥️ Launch server on local address (Windows-safe)
