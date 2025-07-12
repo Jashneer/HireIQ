@@ -78,6 +78,7 @@ let app: import("express").Express;
 
     const port = parseInt(process.env.PORT || "5000", 10);
     const host = process.env.HOST || "0.0.0.0"; // ✅ Ensures Railway traffic works
+    console.log(`🔗 Using PORT: ${port} (from process.env.PORT=${process.env.PORT})`);
 
     const server = app.listen(port, host, () => {
       log(`✅ Server is live at http://${host}:${port}`);
