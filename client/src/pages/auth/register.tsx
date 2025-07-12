@@ -31,7 +31,7 @@ export default function Register() {
     try {
       await authService.register(data);
       toast({
-        title: "Welcome to Recruiter Copilot!",
+        title: "Welcome to HireIQ!",
         description: "Your account has been created successfully.",
       });
       setLocation('/dashboard');
@@ -54,7 +54,7 @@ export default function Register() {
             <Bot className="h-12 w-12 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold text-slate-900">
-            Join Recruiter Copilot
+            Join HireIQ
           </CardTitle>
           <p className="text-slate-600 mt-2">
             Create your account to get started

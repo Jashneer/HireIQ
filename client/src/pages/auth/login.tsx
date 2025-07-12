@@ -52,7 +52,7 @@ export default function Login() {
             <Bot className="h-12 w-12 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold text-slate-900">
-            Welcome to Recruiter Copilot
+            Welcome to HireIQ
           </CardTitle>
           <p className="text-slate-600 mt-2">
             Sign in to your account to continue

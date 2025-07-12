@@ -52,7 +52,7 @@ export function Header() {
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
               <Bot className="h-8 w-8 text-primary mr-2" />
-              <span className="text-xl font-bold text-slate-900">Recruiter Copilot</span>
+              <span className="text-xl font-bold text-slate-900">HireIQ</span>
             </div>
           </div>
           
